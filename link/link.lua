@@ -1,6 +1,11 @@
 require "fmt"
 
-instead.version(3, 2)
+if not instead.atleast(3, 2) then
+	std.dprint("Warning: link module is not functional on this INSTEAD version")
+	function instead.clipboard()
+		return false
+	end
+end
 
 obj {
 	nam = '$link';
