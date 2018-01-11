@@ -89,7 +89,7 @@ std.mod_cmd(function(cmd)
 end)
 
 std.mod_step(function(state)
-	if state and old_use_mode then
+	if state and old_use_mode and not std.abort_cmd then
 		use_off()
 	end
 end)
