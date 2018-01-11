@@ -99,7 +99,7 @@ local input = std.ref '@input'
 local oclick = input.click
 
 function input:click(press, btn, ...)
-	if btn == 3 and press and use_mode then
+	if btn == 3 and press and use_mode() then
 		return '@use_mode_off'
 	end
 	return oclick(press, btn, ...)
