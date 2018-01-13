@@ -29,7 +29,9 @@ end
 function instead:onevent(e)
 	if e == 'pause' and use_mode() then
 		use_off()
+		return std.nop()
 	end
+	return false
 end
 
 
