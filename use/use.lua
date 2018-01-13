@@ -67,15 +67,15 @@ std.player.useit = function(s, w)
 end;
 
 game.use = function()
-	return std.nop()
+--	return std.nop()
 end
 
 game.act = function()
-	return std.nop()
+--	return std.nop()
 end
 
 game.inv = function()
-	return std.nop()
+--	return std.nop()
 end
 
 local old_use_mode
@@ -99,7 +99,7 @@ local input = std.ref '@input'
 local oclick = input.click
 
 function input:click(press, btn, ...)
-	if btn == 3 and press and use_mode() then
+	if not press and use_mode() then
 		return '@use_mode_off'
 	end
 	return oclick(press, btn, ...)
