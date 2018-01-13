@@ -3,6 +3,7 @@
 require 'theme'
 require 'click'
 require 'fmt'
+require 'events'
 
 local USE = false
 
@@ -24,6 +25,13 @@ end
 local function use_mode()
 	return USE
 end
+
+function instead:onevent(e)
+	if e == 'pause' and use_mode() then
+		use_off()
+	end
+end
+
 
 local onew = std.obj.new
 std.obj.new = function(self, v)
