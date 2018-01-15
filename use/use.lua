@@ -3,6 +3,7 @@
 require 'theme'
 require 'click'
 require 'fmt'
+require 'events'
 
 local USE = false
 
@@ -24,6 +25,15 @@ end
 local function use_mode()
 	return USE
 end
+
+function instead:onevent(e)
+	if e == 'pause' and use_mode() then
+		use_off()
+		return std.nop()
+	end
+	return false
+end
+
 
 local onew = std.obj.new
 std.obj.new = function(self, v)
@@ -67,15 +77,15 @@ std.player.useit = function(s, w)
 end;
 
 game.use = function()
-	return std.nop()
+--	return std.nop()
 end
 
 game.act = function()
-	return std.nop()
+--	return std.nop()
 end
 
 game.inv = function()
-	return std.nop()
+--	return std.nop()
 end
 
 local old_use_mode
@@ -99,7 +109,7 @@ local input = std.ref '@input'
 local oclick = input.click
 
 function input:click(press, btn, ...)
-	if btn == 3 and press and use_mode() then
+	if not press and use_mode() then
 		return '@use_mode_off'
 	end
 	return oclick(press, btn, ...)
