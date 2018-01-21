@@ -1,5 +1,6 @@
 require "snd"
 require "timer"
+require "fmt"
 
 local sfxr = require("sfxr")
 local last = true
@@ -14,7 +15,8 @@ room {
 			return
 		elseif last then
 			last = false
-			p [[Нажмите на {button|кнопку} для эффекта.]];
+			pn [[Нажмите на {button|кнопку} для эффекта.]];
+			p (fmt.em [[Внимание! Программа генерирует случайный звук, который может оказаться слишком громким!]])
 		end
 		return false
 	end
