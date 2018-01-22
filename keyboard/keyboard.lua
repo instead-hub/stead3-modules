@@ -338,7 +338,7 @@ room {
 				if vv == ',' then
 					vv = 'comma'
 				end
-				row = row.."{@kbdinput "..vv.."|"..input_esc(a).."}"..fmt.nb "  ";
+				row = row.."{@kbdinput \""..vv.."\"|"..input_esc(a).."}"..fmt.nb "  ";
 			end
 			pn(fmt.c(row))
 		end
