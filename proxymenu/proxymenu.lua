@@ -226,7 +226,10 @@ std.mod_init(function() -- declarations
 	declare 'proxy_menu' (proxy_menu)
 end)
 
-std.mod_step(function()
+std.mod_step(function(state)
+	if not state then
+		return
+	end
 	me().obj:for_each(function(v)
 		if v:type 'proxy_menu' then
 			v:fill()
