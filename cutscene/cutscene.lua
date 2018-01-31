@@ -60,7 +60,7 @@ cutscene = function(v)
 	end
 
 	v.exit = function(s)
-		timer:set(s._timer);
+		timer:set(s.__timer);
 		s:reset()
 	end;
 
