@@ -721,6 +721,7 @@ function(load)
 	theme.set('scr.gfx.scalable', 5)
 	instead.wait_use(false)
 	instead.grab_events(true)
+	instead.fading = false
 	if load then
 		decor:load()
 	end
