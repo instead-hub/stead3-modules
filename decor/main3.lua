@@ -90,11 +90,16 @@ function game:timer()
 
     return false
 end
-
+obj {
+   nam = 'milk';
+   dsc = [[На полу стоит блюдце с {молоком}.]];
+   act = [[Это для котика.]];
+}
 room {
     nam = 'main';
     title = 'ДЕКОРАТОРЫ';
     dsc = [[Привет, мир!]];
+    obj = { 'milk' };
     ondecor = function(s, name, press) -- котика обработаем в комнате
 	if name == 'cat' and press then
 	    local mew = { 'Мяу!', 'Муррр!', 'Мурлык!', 'Мяуууу! Мяуууу!', 'Дай поесть!' };
@@ -130,7 +135,7 @@ function init()
 		decor:new {"snow"..std.tostr(i), "img", "box:4x4,black", x= rnd(800), y = rnd(600), xc = true, yc = true, z = -1 }
 	end
 	decor.bgcol = 'white'
-	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true }
+	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
 	D {"box", "img", "box:64x64,red", x= 12, y = 12, xc = true, yc = true, click = true }
 	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 150, y = 300, align = 'left', hidden = true }
 	D {"box"} -- delete decorator

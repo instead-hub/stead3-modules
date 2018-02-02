@@ -719,6 +719,8 @@ end)
 std.mod_start(
 function(load)
 	theme.set('scr.gfx.scalable', 5)
+	instead.wait_use(false)
+	instead.grab_events(true)
 	if load then
 		decor:load()
 	end
