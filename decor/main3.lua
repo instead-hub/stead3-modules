@@ -139,7 +139,7 @@ function init()
 		decor:new {"snow"..std.tostr(i), "img", "box:4x4,black", x= rnd(800), y = rnd(600), xc = true, yc = true, z = -1 }
 	end
 	decor.bgcol = 'white'
-	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = 1}
+	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
 	D {"box", "img", box_construct, box = 10, x= 12, y = 12, xc = true, yc = true, click = true }
 	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 150, y = 300, align = 'left', hidden = true }
 	D {"box"} -- delete decorator
