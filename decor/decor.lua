@@ -137,7 +137,16 @@ end
 
 function img:new(v)
     local fname = v[3]
-    if type(fname) ~= 'string' then
+    if type(fname) == 'function' then
+	if not std.functions[fname] then
+	    std.err("Non declared function", 2)
+	end
+	local s = fname(v)
+	if not s then
+	    std.err("Can not construct sprite", 2)
+	end
+	return self:new_spr(v, s)
+    elseif type(fname) ~= 'string' then
 	std.err("Wrong filename in image")
     end
     local s = self.cache:get(fname)
@@ -721,7 +730,6 @@ function(load)
 	theme.set('scr.gfx.scalable', 5)
 	instead.wait_use(false)
 	instead.grab_events(true)
---	instead.fading = false
 	if load then
 		decor:load()
 	end
