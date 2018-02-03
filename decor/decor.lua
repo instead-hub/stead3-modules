@@ -206,7 +206,7 @@ function fnt:text(name, size, text, color, style)
     local key = self:text_key(text, color, style)
     local sp = fn.cache:get(key)
     if not sp then
-	sp = fn.fnt:text(text, color, size)
+	sp = fn.fnt:text(text, color, size, style)
 	fn.cache:add(key, sp)
     end
     fn.cache:put(key)
@@ -309,7 +309,7 @@ function txt:new(v)
     end
 
     local align = v.align or 'left'
-    local style = v.style
+    local style = v.style or 0
     local color = v.color or theme.get('win.col.fg')
     local link_color = v.color_link or theme.get('win.col.link')
     local alink_color = v.color_alink or theme.get('win.col.alink')
