@@ -5,11 +5,12 @@ require "click"
 local cache = {
 }
 
-function cache:new(ttl)
+function cache:new(max, ttl)
     local c = {
 	cache = {};
 	list = {};
 	ttl = ttl or 4;
+	max = max or 16;
     }
     self.__index = self
     return std.setmt(c, self)
@@ -40,17 +41,19 @@ end
 function cache:clear()
     local nr = #self.list
     local list = {}
---    if nr <= self.max then
---	return
---    end
+    if nr <= self.max then
+	return
+    end
+    local todel = nr - self.max
     for k, v in ipairs(self.list) do
-	if v.use == 0 then
+	if v.use == 0 and todel > 0 then
 	    v.ttl = v.ttl - 1
 	    if v.ttl <= 0 then
 		self.cache[v.name] = nil
 		if DEBUG then
 		    dprint("cache purge: "..v.name)
 		end
+		todel = todel - 1
 	    else
 		table.insert(list, v)
 	    end
@@ -67,7 +70,7 @@ function cache:put(name)
 	return
     end
     v.use = v.use - 1
-    if v.use <= 0 then v.use = 0; v.ttl = 4; end
+    if v.use <= 0 then v.use = 0; v.ttl = self.ttl; end
 --    for k, vv in ipairs(self.list) do
 --	if vv == v then
 --	    table.remove(self.list, k)
@@ -183,7 +186,7 @@ function fnt:_get(name, size)
 	if not fnt then
 	    std.err("Can not load font", 2)
 	end
-	f = { fnt = fnt, cache = cache:new() }
+	f = { fnt = fnt, cache = cache:new(256, 16) }
 	self.cache:add(self:key(name, size), f)
     end
     return f
