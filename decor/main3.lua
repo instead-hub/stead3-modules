@@ -130,7 +130,7 @@ function game:ondecor(name, press, x, y, btn, act, a, b)
 end
 
 declare 'box_construct' (function (v)
-	return sprite.new("box:10x10,red")
+	return sprite.new("box:"..std.tostr(v.box).."x"..std.tostr(v.box)..",red")
 end)
 
 function init()
@@ -140,7 +140,7 @@ function init()
 	end
 	decor.bgcol = 'white'
 	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = 1}
-	D {"box", "img", box_construct, x= 12, y = 12, xc = true, yc = true, click = true }
+	D {"box", "img", box_construct, box = 10, x= 12, y = 12, xc = true, yc = true, click = true }
 	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 150, y = 300, align = 'left', hidden = true }
 	D {"box"} -- delete decorator
 end
