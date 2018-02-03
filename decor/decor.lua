@@ -206,7 +206,7 @@ function fnt:text(name, size, text, color, style)
     local key = self:text_key(text, color, style)
     local sp = fn.cache:get(key)
     if not sp then
-	sp = fn.fnt:text(text, color, size, style)
+	sp = fn.fnt:text(text, color, style)
 	fn.cache:add(key, sp)
     end
     fn.cache:put(key)
