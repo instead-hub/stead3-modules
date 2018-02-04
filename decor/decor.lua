@@ -905,7 +905,7 @@ end)
 local input = std.ref '@input'
 local clickfn = input.click
 
-function input:click(press, btn, x, y, px, py)
+function input:click(press, btn, x, y, px, py, ...)
     local e = decor:click_filter(press, x, y)
     if e then
 	x = x - e.x + e.xc
@@ -916,7 +916,7 @@ function input:click(press, btn, x, y, px, py)
 	end
 	return '@decor_click'.. (a or '')
     end
-    return clickfn(press, btn, x, y, px, py)
+    return clickfn(input, press, btn, x, y, px, py, ...)
 end
 
 function D(n)
