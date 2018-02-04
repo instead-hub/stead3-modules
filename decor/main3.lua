@@ -121,7 +121,7 @@ local text = [[Привет, любителям и авторам INSTEAD!
 Название позаимствовано от FireURQ.
 [break]
 Надеюсь, вам понравится INSTEAD 3.2!
-Теперь вы можете нажать на {restart|ссылку}]];
+Теперь вы можете нажать на {restart|ссылку}.]];
 
 function game:ondecor(name, press, x, y, btn, act, a, b)
 	-- обработчик кликов декораторов (кроме котика, который обработан в main)
@@ -137,8 +137,8 @@ function game:ondecor(name, press, x, y, btn, act, a, b)
 	return false
 end
 
-declare 'box_construct' (function (v)
-	return sprite.new("box:"..std.tostr(v.box).."x"..std.tostr(v.box)..",red")
+declare 'box_alpha' (function (v)
+	return sprite.new("box:"..std.tostr(v.w).."x"..std.tostr(v.h)..",black"):alpha(32)
 end)
 
 function init()
@@ -148,7 +148,6 @@ function init()
 	end
 	decor.bgcol = 'white'
 	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
-	D {"box", "img", box_construct, box = 10, x= 12, y = 12, xc = true, yc = true, click = true }
-	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 160, y = 300, align = 'left', hidden = false, h = 128, typewriter = true }
-	D {"box"} -- delete decorator
+	D {"bg", "img", box_alpha, xc = true, yc = true, x = 400, w = 180, y = 300, h = 148, z = 1  }
+	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 160, y = 300, align = 'left', hidden = false, h = 128, typewriter = true, z =2 }
 end

@@ -698,6 +698,9 @@ function txt:render(v)
 	end
     end
     img:render(v)
+--    if v:page() < v:pages() then
+-- TODO
+--    end
 end
 
 function txt:delete(v)
