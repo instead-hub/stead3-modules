@@ -426,9 +426,16 @@ function txt:new(v)
     local size = v.size or std.tonum(theme.get 'win.fnt.size')
 
     local x, y = 0, 0
-
     v.fnt = fnt:get(font, size)
     local spw, _ = v.fnt:size(" ")
+
+    local next = pixels.new(_, _)
+
+    next:fill_poly({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, 0, 0, 0)
+    next:polyAA({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, 0, 0, 0)
+
+    v.btn = next:sprite()
+
     local lines = {}
     local line = { h = v.fnt:height() }
     local link_list = {}
@@ -698,9 +705,10 @@ function txt:render(v)
 	end
     end
     img:render(v)
---    if v:page() < v:pages() then
--- TODO
---    end
+    if v:page() < v:pages() and v.btn then
+	local w, h = v.btn:size()
+	v.btn:draw(sprite.scr(), v.x + v.w - v.xc - w, v.y + v.h - v.yc - h)
+    end
 end
 
 function txt:delete(v)

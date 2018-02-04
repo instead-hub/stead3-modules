@@ -113,7 +113,7 @@ room {
     end
 }
 
-local text = [[Привет, любителям и авторам INSTEAD!
+local text = [[Привет любителям и авторам INSTEAD!
 [break]
 Это простая демонстрация
 альфа версии декораторов.
@@ -148,6 +148,6 @@ function init()
 	end
 	decor.bgcol = 'white'
 	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
-	D {"bg", "img", box_alpha, xc = true, yc = true, x = 400, w = 180, y = 300, h = 148, z = 1  }
-	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 160, y = 300, align = 'left', hidden = false, h = 128, typewriter = true, z =2 }
+	D {"bg", "img", box_alpha, xc = true, yc = true, x = 400, w = 180, y = 300, h = 148, z = 2  }
+	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 160, y = 300, align = 'left', hidden = false, h = 128, typewriter = true, z =1 }
 end
