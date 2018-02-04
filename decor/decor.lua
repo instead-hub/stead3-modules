@@ -337,7 +337,8 @@ end
 local function preparse_links(text, links)
     local links = {}
     local link_id = 0
-    return std.for_each_xref(text,
+
+    local s = std.for_each_xref(text,
 	    function(str)
 		local h, l = parse_xref(str)
 		if not h then
@@ -351,7 +352,9 @@ local function preparse_links(text, links)
 		    o = o .. "\3".. std.tostr(#links)  .."\4"
 		end
 		return o
-    end), links
+    end)
+    s = s:gsub('\\?'..'[{}]', { ['\\{'] = '{', ['\\}'] = '}' })
+    return s, links
 end
 
 function txt:make_page(v, nr)
