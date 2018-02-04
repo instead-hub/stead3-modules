@@ -74,7 +74,11 @@ where будет равно 'main'
 
 ]]--
 function game:timer()
-    D"cat".x = D"cat".x + 2
+    local cat = D'cat'
+    cat.x = cat.x + 2
+    if cat.x > 400 and D'text':page() == 1 then
+	D'text':page(D'text':page() + 1)
+    end
     if D"cat".x > 200 then
 	    D"text".hidden = false
     end
@@ -110,19 +114,19 @@ room {
     end
 }
 
-local text = [[Проверка длинных {test аргумент1 "с пробелом"|текстов}, да еще с переносами строк.
-Интересно сработает ли? А также интересно посмотреть на разные типы выравнивания!
-И конечно, на принудительный {test 2 22|разрыв строк}!]];
+local text = [[Привет, любителям и авторам INSTEAD! Это простая демонстрация
+альфа версии декораторов. Название позаимствовано от FireURQ. (ПРИВЕТ!)
+Надеюсь, вам понравится INSTEAD 3.2. Спасибо!
+Теперь вы можете нажать на {restart|ссылку}]];
 
 function game:ondecor(name, press, x, y, btn, act, a, b)
 	-- обработчик кликов декораторов (кроме котика, который обработан в main)
-	if act == 'test' then
-	    if D'text'.align == 'left' then
-		D"text".align = 'justify'
-	    else
-		D"text".align = 'left'
-	    end
-	    D(D'text') -- пересоздали декоратор (так как задание выравнивения влияет на рендер)
+	if name == 'text' and not act then
+		D'text':next_page()
+		return false
+	end
+	if act == 'restart' then
+	    D'text':page(1)
 	    p("click:", name, ":",a, " ", b, " ", x, ",", y) -- вывели информацию о клике
 	    return
 	end
@@ -141,6 +145,6 @@ function init()
 	decor.bgcol = 'white'
 	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
 	D {"box", "img", box_construct, box = 10, x= 12, y = 12, xc = true, yc = true, click = true }
-	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 150, y = 300, align = 'left', hidden = true }
+	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 150, y = 300, align = 'left', hidden = false, h = 128, typewriter = true }
 	D {"box"} -- delete decorator
 end

@@ -2,6 +2,29 @@ require "sprite"
 require "theme"
 require "click"
 
+local function utf_ff(b, pos)
+    if type(b) ~= 'string' or b:len() == 0 then
+	return 0
+    end
+    local utf8 = (std.game.codepage == 'UTF-8' or std.game.codepage == 'utf-8')
+    if not utf8 then return 1 end
+    local i = pos or 1
+    local l = 0
+    if b:byte(i) < 0x80 then
+	return 1
+    end
+    i = i + 1
+    l = l + 1
+    while b:byte(i) >= 0x80 and b:byte(i) <= 0xbf do
+	i = i + 1
+	l = l + 1
+	if i > b:len() then
+	    break
+	end
+    end
+    return l
+end
+
 local cache = {
 }
 
@@ -218,8 +241,40 @@ function fnt:put(name, size)
     self.cache:put(self:key(name, size))
 end
 
+local txt_mt = {
+}
+
 local txt = {
 }
+
+function txt_mt:pages()
+    return #self.__pages
+end
+
+function txt_mt:page(nr)
+    if nr == nil then
+	return self.page_nr
+    end
+    if nr > self:pages() then
+	return false
+    end
+    if nr < 1 then
+	return false
+    end
+    txt:make_page(self, nr)
+    return true
+end
+
+function txt_mt:next_page()
+    if self.typewriter and self.started then
+	self.typewriter = false
+	txt:make_page(self, self.page_nr or 1)
+	self.typewriter = true
+	self.started = false
+	return
+    end
+    return self:page((self.page_nr or 1) + 1)
+end
 
 local function make_align(l, width, t)
     if t == 'left' then
@@ -299,6 +354,54 @@ local function preparse_links(text, links)
     end), links
 end
 
+function txt:make_page(v, nr)
+    local page = nr or v.page_nr or 1
+    local lines = v.__lines
+    local spr = v.sprite
+    local size = v.size or std.tonum(theme.get 'win.fnt.size')
+    local color = v.color or theme.get('win.col.fg')
+    local link_color = v.color_link or theme.get('win.col.link')
+    local alink_color = v.color_alink or theme.get('win.col.alink')
+    local font = v.font or theme.get('win.fnt.name')
+    v.page_nr = page
+
+    if not v.spr_blank then
+	v.spr_blank = sprite.new(v.w, v.h)
+    end
+    local lnr = v.__pages[page]
+    v.spr_blank:copy(v.sprite)
+    local off = lines[lnr].y
+    v.__offset = off
+    for _ = lnr, #lines do
+	local l = lines[_]
+	if l.y + l.h - off > v.h then
+	    break
+	end
+	for _, w in ipairs(l) do
+	    if not w.spr then
+		w.spr = fnt:text(font, size, w.txt,
+				 w.id and link_color or color, w.style)
+	    end
+	    if w.id then -- link
+		if not w.link then
+		    w.link = fnt:text(font, size, w.txt, alink_color, w.style)
+		end
+	    else
+		w.link = nil
+	    end
+	    w.spr:copy(v.sprite, w.x, w.y - off)
+	end
+    end
+    if v.typewriter then
+	v.step = 0; -- typewriter effect
+	v.started = true
+	if not v.spr_blank then
+	    v.spr_blank = sprite.new(v.w, v.h)
+	end
+	v.spr_blank:copy(v.sprite)
+    end
+end
+
 function txt:new(v)
     local text = v[3]
     if type(text) == 'function' then
@@ -310,9 +413,6 @@ function txt:new(v)
 
     local align = v.align or 'left'
     local style = v.style or 0
-    local color = v.color or theme.get('win.col.fg')
-    local link_color = v.color_link or theme.get('win.col.link')
-    local alink_color = v.color_alink or theme.get('win.col.alink')
     local font = v.font or theme.get('win.fnt.name')
     local intvl = v.interval or std.tonum(theme.get 'win.fnt.height')
     local size = v.size or std.tonum(theme.get 'win.fnt.size')
@@ -352,13 +452,8 @@ function txt:new(v)
     local links
     text, links = preparse_links(text)
 
-    local finish = false
     local ww
     for w in text:gmatch("[^ \t]+") do
-	if finish then
-	    break
-	end
-
 	while w and w ~= '' do
 	    local s, _ = w:find("\n", 1, true)
 	    if not s then
@@ -372,26 +467,20 @@ function txt:new(v)
 		w = w:sub(2)
 	    end
 	    if ww == '\n' then
-		if newline() then
-		    finish = true
-		    break
-		end
+		newline()
 	    else
-		local t, col, act
-		local sp, linksp
+		local t, act
 		local applist = {}
 		local xx = 0
 
 		while ww and ww ~= '' do
 		    s, _ = ww:find("\3[0-9]+\4", 1)
-		    col = color
 		    local id
 		    if s == 1 then
 			local n = std.tonum(ww:sub(s + 1, _ - 1))
 			local ll = links[n]
 			act, t, id = ll[1], ll[2], ll[3]
 			ww = ww:sub(_ + 1)
-			col = link_color
 		    elseif s then
 			t = ww:sub(1, s - 1)
 			ww = ww:sub(s)
@@ -399,20 +488,14 @@ function txt:new(v)
 			t = ww
 			ww = false
 		    end
-		    sp = fnt:text(font, size, t, col, style)
-		    if id then -- link
-			linksp = fnt:text(font, size, t, alink_color, style)
-		    else
-			linksp = false
-		    end
-		    local width, height = sp:size()
+		    local width, height = v.fnt:size(t)
 		    if height > line.h then
 			line.h = height
 		    end
-		    local witem = { link = linksp,
+		    local witem = { style = style,
 				    action = act, id = id, x = xx, y = y,
-				    spr = sp, w = width, h = height, txt = t }
-		    if linksp then
+				    w = width, h = height, txt = t }
+		    if id then
 			table.insert(link_list, witem)
 		    end
 		    table.insert(applist, witem)
@@ -421,10 +504,7 @@ function txt:new(v)
 		local sx = 0;
 
 		if maxw and x + xx + spw >= maxw and #line > 0 then
-		    if newline() then
-			finish = true
-			break
-		    end
+		    newline()
 		else
 		    sx = x
 		end
@@ -449,30 +529,44 @@ function txt:new(v)
     if #line > 0 then
 	newline()
     end
-    local spr = sprite.new(maxw or W, maxh or H)
-    for _, l in ipairs(lines) do
-	make_align(l, maxw or W, align)
-	for _, w in ipairs(l) do
-	    w.spr:copy(spr, w.x, w.y)
-	end
+
+    v.sprite = sprite.new(maxw or W, maxh or H)
+    local pages = {}
+    local off = 0;
+    if #lines > 1 then
+	table.insert(pages, 1)
     end
+    for _, l in ipairs(lines) do
+	if l.y + l.h - off > (maxh or H) then
+	    off = l.y
+	    table.insert(pages, _)
+	end
+	make_align(l, maxw or W, align)
+    end
+    v.__pages = pages
     v.__lines = lines
     v.__link_list = link_list
-    if #link_list > 0 then
+    v.w, v.h = v.sprite:size()
+    if #link_list > 0 or #pages > 1 then
 	v.click = true
     end
-    return img:new_spr(v, spr)
+    std.setmt(v, txt_mt)
+    txt_mt.__index = txt_mt
+    self:make_page(v)
+    return img:new_spr(v, v.sprite)
 end
 
-function txt:render_tw(v, step)
+function txt:make_tw(v, step)
     local n = 0
-    if not v.spr_blank then
-	v.spr_blank = sprite.new(v.w, v.h)
-    end
-    v.spr_blank:copy(v.sprite)
     local spr = v.sprite
-    for _, l in ipairs(v.__lines) do
+    local lnr = v.__pages[v.page_nr]
+    for _ = lnr, #v.__lines do
 	if n >= step then
+	    break
+	end
+	local l = v.__lines[_]
+	if l.y + l.h - v.__offset > v.h then
+	    v.started = false
 	    break
 	end
 	for _, w in ipairs(l) do
@@ -480,22 +574,33 @@ function txt:render_tw(v, step)
 		break
 	    end
 	    if w.txt:len() + n <= step then
-		w.spr:copy(spr, w.x, w.y)
 		n = n + w.txt:len()
 		n = n + 1
+		if n >= step then
+		    w.spr:copy(spr, w.x, w.y - v.__offset)
+		end
 	    else
 		local nm = step - n
-		local txt = w.txt:sub(1, nm)
+		local i = 1
+		while i < nm do
+		    i = i + utf_ff(w.txt, i)
+		end
+		local txt = w.txt:sub(1, i - 1)
 		local ww, hh = v.fnt:size(txt)
-		w.spr:copy(0, 0, ww, hh, spr, w.x, w.y)
+		w.spr:copy(0, 0, ww, hh, spr, w.x, w.y - v.__offset)
 		n = step
 	    end
 	end
+    end
+    if n < step then
+	v.started = false
     end
     return step > n
 end
 
 function txt:link(v, x, y)
+    local off = v.__offset or 0
+    y = y + off
     for _, w in ipairs(v.__link_list) do
 	if x >= w.x and y >= w.y then
 	    if x < w.x + w.w and y < w.y + w.h then
@@ -518,14 +623,17 @@ function txt:click(v, press, x, y)
     return {}
 end
 
--- local num = 0
-
 function txt:render(v)
---    if not txt:render_tw(v, num) then
---	img:render(v)
---	num = num + 2
---	return
---    end
+    if v.typewriter and v.started then
+	local d = instead.ticks() - (v.__last_tw or 0)
+	if d > (v.delay or 25) then
+	    v.__last_tw = instead.ticks()
+	    v.step = (v.step or 0) + (v.speed or 1)
+	    txt:make_tw(v, v.step)
+	end
+	img:render(v)
+	return
+    end
     local x, y = instead.mouse_pos()
     x = x - v.x + v.xc
     y = y - v.y + v.yc
@@ -538,12 +646,12 @@ function txt:render(v)
 	if w.id == id then
 	    if not w.__active then
 		w.__active = true
-		w.link:copy(v.sprite, w.x, w.y)
+		w.link:copy(v.sprite, w.x, w.y - v.__offset)
 	    end
 	else
 	    if w.__active then
 		w.__active = false
-		w.spr:copy(v.sprite, w.x, w.y)
+		w.spr:copy(v.sprite, w.x, w.y - v.__offset)
 	    end
 	end
     end
