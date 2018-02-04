@@ -1,6 +1,7 @@
 require "sprite"
 require "theme"
 require "click"
+loadmod "color2rgb"
 
 local function utf_ff(b, pos)
     if type(b) ~= 'string' or b:len() == 0 then
@@ -431,8 +432,10 @@ function txt:new(v)
 
     local next = pixels.new(_, _)
 
-    next:fill_poly({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, 0, 0, 0)
-    next:polyAA({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, 0, 0, 0)
+    local r, g, b = color2rgb(v.color or theme.get('win.col.fg'))
+
+    next:fill_poly({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, r, g, b)
+    next:polyAA({0, 0, _ - 1, 0, _ / 2, _ / 2 - 1}, r, g, b)
 
     v.btn = next:sprite()
 
@@ -643,6 +646,9 @@ function txt:make_tw(v, step)
 end
 
 function txt:link(v, x, y)
+    if v.typewriter and v.started then
+	return
+    end
     local off = v.__offset or 0
     y = y + off
 
