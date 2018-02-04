@@ -593,6 +593,7 @@ function txt:make_tw(v, step)
 		while i < nm do
 		    i = i + utf_ff(w.txt, i)
 		end
+		step = step + i - nm
 		local txt = w.txt:sub(1, i - 1)
 		local ww, hh = v.fnt:size(txt)
 		w.spr:copy(0, 0, ww, hh, spr, w.x, w.y - v.__offset)
@@ -600,6 +601,7 @@ function txt:make_tw(v, step)
 	    end
 	end
     end
+    v.step = n
     if n < step then
 	v.started = false
     end
