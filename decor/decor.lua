@@ -382,7 +382,7 @@ function txt:make_page(v, nr)
     v.__offset = off
     for _ = lnr, #lines do
 	local l = lines[_]
-	if l.y + l.h - off > v.h then
+	if l.y + l.h - off > v.h or l.pgbrk then
 	    break
 	end
 	for _, w in ipairs(l) do
@@ -448,6 +448,7 @@ function txt:new(v)
 	    H = y
 	end
 	if #line > 0 then
+	    if #line == 1 and line[1].txt == '[break]' then line.pgbrk = true end
 	    table.insert(lines, line)
 	end
 	line = { h = v.fnt:height() }
@@ -542,6 +543,7 @@ function txt:new(v)
 		    if k ~= 1 then
 			v.unbreak = true
 		    end
+		    v.line = line
 		    table.insert(line, v)
 		end
 		x = x + spw
@@ -562,12 +564,19 @@ function txt:new(v)
     if #lines >= 1 then
 	table.insert(pages, 1)
     end
+    local brk
     for _, l in ipairs(lines) do
-	if l.y + l.h - off > (maxh or H) then
+	l.page = #pages
+	if l.pgbrk then
+	    brk = true
+	elseif (l.y + l.h - off > (maxh or H)) or brk then
 	    off = l.y
 	    table.insert(pages, _)
+	    brk = false
+	else
+	    make_align(l, maxw or W, align)
+	    brk = false
 	end
-	make_align(l, maxw or W, align)
     end
     v.__pages = pages
     v.__lines = lines
@@ -591,7 +600,7 @@ function txt:make_tw(v, step)
 	    break
 	end
 	local l = v.__lines[_]
-	if l.y + l.h - v.__offset > v.h then
+	if l.y + l.h - v.__offset > v.h or l.pgbrk then
 	    v.started = false
 	    break
 	end
@@ -631,7 +640,7 @@ function txt:link(v, x, y)
     y = y + off
 
     for _, w in ipairs(v.__link_list) do
-	if w.y - off >= 0 and w.y - off + w.h < v.h then
+	if w.line.page == (v.page_nr or 1) then
 	if x >= w.x and y >= w.y then
 	    if x < w.x + w.w and y < w.y + w.h then
 		return w, _
@@ -673,11 +682,8 @@ function txt:render(v)
     local action = w and w.action or false
     local id = w and w.id or false
 
-    if not id then
-	img:render(v)
-	return
-    end
     for _, w in ipairs(v.__link_list) do
+	if w.line.page == (v.page_nr or 1) then
 	if w.id == id then
 	    if not w.__active then
 		w.__active = true
@@ -688,6 +694,7 @@ function txt:render(v)
 		w.__active = false
 		w.spr:copy(v.sprite, w.x, w.y - v.__offset)
 	    end
+	end
 	end
     end
     img:render(v)
