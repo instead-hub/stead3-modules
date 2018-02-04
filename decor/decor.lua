@@ -137,6 +137,10 @@ function img:render(v)
 	    v.__delay = instead.ticks()
 	end
     end
+    if v.background then
+	v.sprite:copy(sprite.scr(), 0, 0)
+	return
+    end
     if v.fx and v.fy and v.w and v.h then
 	v.sprite:draw(v.fx, v.fy, v.w, v.h, sprite.scr(), v.x - v.xc, v.y - v.yc)
     else
