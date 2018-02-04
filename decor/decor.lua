@@ -650,6 +650,10 @@ function txt:render(v)
     local action = w and w.action or false
     local id = w and w.id or false
 
+    if not id then
+	img:render(v)
+	return
+    end
     for _, w in ipairs(v.__link_list) do
 	if w.id == id then
 	    if not w.__active then
