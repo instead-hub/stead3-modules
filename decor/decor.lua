@@ -373,6 +373,7 @@ function txt:make_page(v, nr)
     end
     local lnr = v.__pages[page]
     v.spr_blank:copy(v.sprite)
+    if #lines == 0 then return end
     local off = lines[lnr].y
     v.__offset = off
     for _ = lnr, #lines do
@@ -536,7 +537,7 @@ function txt:new(v)
     v.sprite = sprite.new(maxw or W, maxh or H)
     local pages = {}
     local off = 0;
-    if #lines > 1 then
+    if #lines >= 1 then
 	table.insert(pages, 1)
     end
     for _, l in ipairs(lines) do
