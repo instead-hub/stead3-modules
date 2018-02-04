@@ -611,7 +611,9 @@ end
 function txt:link(v, x, y)
     local off = v.__offset or 0
     y = y + off
+
     for _, w in ipairs(v.__link_list) do
+	if w.y - off >= 0 and w.y - off + w.h < v.h then
 	if x >= w.x and y >= w.y then
 	    if x < w.x + w.w and y < w.y + w.h then
 		return w, _
@@ -621,6 +623,7 @@ function txt:link(v, x, y)
 	    x < next.x and y < next.y + next.h then
 		return w, _
 	    end
+	end
 	end
     end
 end
