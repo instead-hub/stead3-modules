@@ -459,7 +459,7 @@ function txt:new(v)
 
     local links
     text, links = preparse_links(text)
-
+    local styles = {}
     local ww
     for w in text:gmatch("[^ \t]+") do
 	while w and w ~= '' do
@@ -496,11 +496,29 @@ function txt:new(v)
 			t = ww
 			ww = false
 		    end
-		    local width, height = v.fnt:size(t)
+
+		    while t:find("^%[[ibu]%]") do
+			table.insert(styles, t:sub(2, 2))
+			t = t:gsub("^%[[ibu]%]", "")
+		    end
+
+		    local st = style
+
+		    local m = { b = 1, i = 2, u = 4 }
+
+		    for i = 1, #styles do
+			st = st + m[styles[i]]
+		    end
+
+		    while t:find("%[/[ibu]%]$") do
+			table.remove(styles, #styles)
+			t = t:gsub("%[/[ibu]%]$", "")
+		    end
+		    local width, height = v.fnt:size(t, st)
 		    if height > line.h then
 			line.h = height
 		    end
-		    local witem = { style = style,
+		    local witem = { style = st,
 				    action = act, id = id, x = xx, y = y,
 				    w = width, h = height, txt = t }
 		    if id then
