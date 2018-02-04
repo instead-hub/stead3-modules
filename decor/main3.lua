@@ -76,9 +76,6 @@ where будет равно 'main'
 function game:timer()
     local cat = D'cat'
     cat.x = cat.x + 2
-    if cat.x > 400 and D'text':page() == 1 then
-	D'text':page(D'text':page() + 1)
-    end
     if D"cat".x > 200 then
 	    D"text".hidden = false
     end
