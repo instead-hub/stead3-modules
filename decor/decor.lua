@@ -730,8 +730,8 @@ decor = obj {
 	fnt = fnt;
 	txt = txt;
 	dirty = false;
-    };
-    objects = {
+	objects = {
+	}
     };
     bgcol = 'black';
 }
@@ -943,3 +943,7 @@ function D(n)
     end
     return decor:get(n)
 end
+
+std.mod_save(function(fp)
+    fp:write(string.format("std'@decor'.objects = %s\n", std.dump(decor.objects, false)))
+end)
