@@ -75,29 +75,15 @@ act будет равен 'walk'
 where будет равно 'main'
 
 ]]--
-function game:timer()
-    local cat = D'cat'
-    cat.x = cat.x + 2
-    if D"cat".x > 200 then
-	    D"text".hidden = false
-    end
-    for i = 1, 100 do
-	local d = D("snow"..std.tostr(i))
-	d.y = d.y + rnd(3)
-	d.x = d.x + rnd(3) - 2
-	if d.y > 600 then
-	    d.y = 0
-	    d.x = rnd(800)
-	end
-    end
 
-    return false
-end
 obj {
-   nam = 'milk';
-   dsc = [[На полу стоит блюдце с {молоком}.]];
-   act = [[Это для котика.]];
+    nam = 'milk';
+    dsc = [[На полу стоит блюдце с {молоком}.]];
+    act = function()
+	p [[Это для котика.]];
+    end;
 }
+
 room {
     nam = 'main';
     title = 'ДЕКОРАТОРЫ';
@@ -122,7 +108,9 @@ local text = [[Привет любителям и авторам INSTEAD!
 [break]
 Надеюсь, вам понравится INSTEAD 3.2!
 Теперь вы можете нажать на {restart|ссылку}.]];
-
+function game:timer()
+	return false
+end
 function game:ondecor(name, press, x, y, btn, act, a, b)
 	-- обработчик кликов декораторов (кроме котика, который обработан в main)
 	if name == 'text' and not act then
@@ -141,13 +129,26 @@ declare 'box_alpha' (function (v)
 	return sprite.new("box:"..std.tostr(v.w).."x"..std.tostr(v.h)..",black"):alpha(32)
 end)
 
+declare 'flake' (function (d)
+    d.y = d.y + rnd(3)
+    d.x = d.x + rnd(3) - 2
+    if d.y > 600 then
+	d.y = 0
+	d.x = rnd(800)
+    end
+end)
+
+declare 'kitten' (function (cat)
+    cat.x = cat.x + 2
+end)
+
 function init()
 	timer:set(50)
 	for i = 1, 100 do
-		decor:new {"snow"..std.tostr(i), "img", "box:4x4,black", x= rnd(800), y = rnd(600), xc = true, yc = true, z = -1 }
+		decor:new {"snow"..std.tostr(i), "img", "box:4x4,black", process = flake, x= rnd(800), y = rnd(600), xc = true, yc = true, z = -1 }
 	end
 	decor.bgcol = 'white'
-	D {"cat", "img", "anim.png", x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
+	D {"cat", "img", "anim.png", process = kitten, x = -64, y = 48, frames = 3, w = 64, h = 54, delay = 100, click = true, z = -1}
 	D {"bg", "img", box_alpha, xc = true, yc = true, x = 400, w = 180, y = 300, h = 148, z = 2  }
 	D {"text", "txt", text, xc = true, yc = true, x = 400, w = 160, y = 300, align = 'left', hidden = false, h = 128, typewriter = true, z =1 }
 end

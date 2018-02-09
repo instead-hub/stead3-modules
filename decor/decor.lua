@@ -780,6 +780,19 @@ end
 
 local after_list = {}
 
+function decor:process()
+    local t = instead.ticks()
+    for _, v in pairs(self.objects) do
+	if not v.hidden and type(v.process) == 'function' then
+	    decor.dirty = true
+	    if t - (v.__last_time or 0) > (v.speed or 25) then
+		    v:process()
+		    v.__last_time = t
+	    end
+	end
+    end
+end
+
 function decor:render()
     local list = {}
     if not decor.dirty then
@@ -911,11 +924,13 @@ function(state)
     if not state then
 	if std.cmd[1] == '@timer' then
 	    decor:cache_clear()
+	    decor:process()
 	    decor:render()
 	end
 	return
     end
     decor:cache_clear()
+    decor:process()
     decor:render()
 end)
 
@@ -937,7 +952,7 @@ function input:click(press, btn, x, y, px, py, ...)
 end
 
 function D(n)
-    decor.dirty = true;
+    decor.dirty = true
     if type(n) == 'table' then
 	return decor:new(n)
     end
