@@ -1,8 +1,8 @@
 loadmod 'fading'
 
 local effects = {
-	'fadeblack',
 	'crossfade',
+	'fadeblack',
 	'move_left',
 	'move_right',
 	'move_up',

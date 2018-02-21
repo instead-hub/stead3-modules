@@ -12,7 +12,7 @@ local f = std.obj {
 		effects = {};
 	};
 	delay = 20;
-	effect = 'fadeblack';
+	effect = 'crossfade';
 	max = 16; -- iterations
 	nam = '@fading';
 }
