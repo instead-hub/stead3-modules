@@ -13,7 +13,7 @@ local f = std.obj {
 	delay = 20; -- default delay
 	max = 16; -- default max
 	effect = false;
-	oldeffect = false;
+	defeffect = false;
 	nam = '@fading';
 }
 
@@ -39,28 +39,28 @@ function f.effects.crossfade(s, src, dst)
 end
 
 function f.effects.move_left(s, src, dst)
-	sprite.scr():fill('black')
+--	sprite.scr():fill('black')
 	local x = theme.scr.w() * s.step / s.max
 	src:copy(sprite.scr(), x, 0);
 	dst:copy(sprite.scr(), x - theme.scr.w(), 0);
 end
 
 function f.effects.move_right(s, src, dst)
-	sprite.scr():fill('black')
+--	sprite.scr():fill('black')
 	local x = theme.scr.w() * s.step / s.max
 	dst:copy(sprite.scr(), theme.scr.w() - x, 0);
 	src:copy(sprite.scr(), -x, 0);
 end
 
 function f.effects.move_up(s, src, dst)
-	sprite.scr():fill('black')
+--	sprite.scr():fill('black')
 	local y = theme.scr.h() * s.step / s.max
 	src:copy(sprite.scr(), 0, y);
 	dst:copy(sprite.scr(), 0, y - theme.scr.h());
 end
 
 function f.effects.move_down(s, src, dst)
-	sprite.scr():fill('black')
+--	sprite.scr():fill('black')
 	local y = theme.scr.h() * s.step / s.max
 	dst:copy(sprite.scr(), 0, theme.scr.h() - y);
 	src:copy(sprite.scr(), 0, -y);
@@ -101,12 +101,9 @@ function f.set(ops)
 	end
 	ops.delay = ops.delay or f.delay
 	ops.max = ops.max or f.max
-	if not ops.forever then
-		f.oldeffect = std.clone(f.effect)
-	end
 	f.effect = std.clone(ops)
 	if ops.forever then
-		f.oldeffect = std.clone(f.effect)
+		f.defeffect = std.clone(f.effect)
 	end
 end
 
@@ -134,8 +131,8 @@ std.mod_cmd(function(cmd)
 
 	if f.effect.step > f.effect.max then
 		f.started = false
-		if f.oldeffect then
-			f.effect = std.clone(f.oldeffect)
+		if f.defeffect then
+			f.effect = std.clone(f.defeffect)
 		end
 		timer:set(f.timer)
 		sprite.direct(false)
@@ -144,13 +141,15 @@ std.mod_cmd(function(cmd)
 	return
 end)
 std.mod_init(function()
-	f.set { 'crossfade' };
+	f.change { 'crossfade' };
 end)
 
 std.mod_start(function()
 	scr = sprite.new(theme.get 'scr.w', theme.get 'scr.h')
 	scr2 = sprite.new(theme.get 'scr.w', theme.get 'scr.h')
---	f.effect = f.oldeffect
+	if f.defeffect then
+		f.effect = std.clone(f.defeffect)
+	end
 end)
 
 std.mod_step(function(state)
