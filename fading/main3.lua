@@ -27,7 +27,7 @@ obj {
 	act = function(s)
 		effect = effect + 1;
 		if effect > #effects then effect = 1 end
-		fading.set {effects[effect], max = 32, delay = 25}
+		fading.change {effects[effect], max = 32, delay = 25}
 	end;
 }
 
