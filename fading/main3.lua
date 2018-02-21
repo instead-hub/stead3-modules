@@ -1,5 +1,14 @@
 loadmod 'fading'
+--[[
+fading.set {'имя эффекта', параметры } -- задание эффекта на 1 раз (на следующий переход)
+параметры:
+delay = 20 -- значение таймера
+max = 16 -- число итераций
 
+fading.change {'имя эффекта', параметры } -- задание эффекта навсегда (на все переходы)
+Это синоним эффекта по умолчанию.
+
+]]--
 local effects = {
 	'crossfade',
 	'fadeblack',
@@ -18,7 +27,7 @@ obj {
 	act = function(s)
 		effect = effect + 1;
 		if effect > #effects then effect = 1 end
-		fading.effect = effects[effect]
+		fading.set {effects[effect], max = 32, delay = 25}
 	end;
 }
 

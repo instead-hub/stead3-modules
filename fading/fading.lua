@@ -8,12 +8,12 @@ local f = std.obj {
 	{
 		started = false;
 		timer = false;
-		step = 0;
 		effects = {};
 	};
-	delay = 20;
-	effect = 'crossfade';
-	max = 16; -- iterations
+	delay = 20; -- default delay
+	max = 16; -- default max
+	effect = false;
+	oldeffect = false;
 	nam = '@fading';
 }
 
@@ -82,9 +82,32 @@ function f.start()
 	sprite.scr():copy(scr)
 	sprite.direct(old)
 	f.timer = timer:get()
-	f.step = 0
+	f.effect.step = 0
 	f.started = true
-	timer:set(f.delay)
+	timer:set(f.effect.delay or 20)
+end
+
+function f.change(ops)
+	if type(ops) == 'string' then
+		ops = { ops }
+	end
+	ops.forever = true
+	f.set(ops)
+end
+
+function f.set(ops)
+	if type(ops) == 'string' then
+		ops = { ops }
+	end
+	ops.delay = ops.delay or f.delay
+	ops.max = ops.max or f.max
+	if not ops.forever then
+		f.oldeffect = std.clone(f.effect)
+	end
+	f.effect = std.clone(ops)
+	if ops.forever then
+		f.oldeffect = std.clone(f.effect)
+	end
 end
 
 local oldrender = sprite.render_callback()
@@ -105,22 +128,29 @@ std.mod_cmd(function(cmd)
 		return
 	end
 
-	f.step = f.step + 1
+	f.effect.step = f.effect.step + 1
 
-	f.effects[f.effect](f, scr, scr2)
+	f.effects[f.effect[1]](f.effect, scr, scr2)
 
-	if f.step > f.max then
+	if f.effect.step > f.effect.max then
 		f.started = false
+		if f.oldeffect then
+			f.effect = std.clone(f.oldeffect)
+		end
 		timer:set(f.timer)
 		sprite.direct(false)
 		return std.nop()
 	end
 	return
 end)
+std.mod_init(function()
+	f.set { 'crossfade' };
+end)
 
 std.mod_start(function()
 	scr = sprite.new(theme.get 'scr.w', theme.get 'scr.h')
 	scr2 = sprite.new(theme.get 'scr.w', theme.get 'scr.h')
+--	f.effect = f.oldeffect
 end)
 
 std.mod_step(function(state)
