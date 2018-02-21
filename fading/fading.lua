@@ -87,11 +87,16 @@ function f.start()
 	timer:set(f.delay)
 end
 
-instead.render_callback(function()
+local oldrender = sprite.render_callback()
+
+sprite.render_callback(function()
 	if f.started and not sprite.direct() then
 		sprite.direct(true)
 		sprite.scr():copy(scr2)
 		scr:copy(sprite.scr())
+	end
+	if not f.started and oldrender then
+		oldrender()
 	end
 end)
 

@@ -823,11 +823,14 @@ function decor:render()
     end
     decor.dirty = false
 end
-
+local oldrender = sprite.render_callback()
 sprite.render_callback(
     function()
 	for _, v in ipairs(after_list) do
 	    decor[v.type]:render(v)
+	end
+	if oldrender then
+	    oldrender()
 	end
 end)
 
