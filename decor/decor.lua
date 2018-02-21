@@ -540,7 +540,7 @@ function txt:new(v)
 		end
 		local sx = 0;
 
-		if maxw and x + xx + spw >= maxw and #line > 0 then
+		if maxw and x + xx + spw > maxw and #line > 0 then
 		    newline()
 		else
 		    sx = x
