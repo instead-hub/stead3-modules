@@ -821,7 +821,9 @@ function decor:render()
     for _, v in ipairs(list) do
 	self[v.type]:render(v)
     end
-    decor.dirty = false
+    if #list == 0 and #after_list == 0 then
+	decor.dirty = false
+    end
 end
 local oldrender = sprite.render_callback()
 sprite.render_callback(
