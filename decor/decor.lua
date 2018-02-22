@@ -269,6 +269,9 @@ function txt_mt:page(nr)
     if nr < 1 then
 	return false
     end
+    if self.typewriter then
+	self.finished = false
+    end
     txt:make_page(self, nr)
     return true
 end
@@ -279,6 +282,7 @@ function txt_mt:next_page()
 	txt:make_page(self, self.page_nr or 1)
 	self.typewriter = true
 	self.started = false
+	self.finished = true
 	return
     end
     return self:page((self.page_nr or 1) + 1)
@@ -408,11 +412,14 @@ function txt:make_page(v, nr)
     end
     if v.typewriter then
 	v.step = 0; -- typewriter effect
-	v.started = true
 	if not v.spr_blank then
 	    v.spr_blank = sprite.new(v.w, v.h)
 	end
-	v.spr_blank:copy(v.sprite)
+	if not v.finished then
+		v.started = true
+		v.finished = false
+		v.spr_blank:copy(v.sprite)
+	end
     end
 end
 
@@ -623,6 +630,7 @@ function txt:make_tw(v, step)
 	local l = v.__lines[_]
 	if l.y + l.h - v.__offset > v.h or l.pgbrk then
 	    v.started = false
+	    v.finished = true
 	    break
 	end
 	for _, w in ipairs(l) do
@@ -652,6 +660,7 @@ function txt:make_tw(v, step)
     v.step = n
     if n < step then
 	v.started = false
+	v.finished = true
     end
     return step > n
 end
