@@ -139,7 +139,11 @@ function img:render(v)
 	end
     end
     if v.background then
-	v.sprite:copy(sprite.scr(), 0, 0)
+        if v.fx and v.fy and v.w and v.h then
+	    v.sprite:copy(v.fx, v.fy, v.w, v.h, sprite.scr(), v.x - v.xc, v.y - v.yc)
+	else
+	    v.sprite:copy(sprite.scr(), v.x - v.xc, v.y - v.yc)
+	end
 	return
     end
     if v.fx and v.fy and v.w and v.h then
@@ -152,6 +156,8 @@ end
 function img:new_spr(v, s)
     v.xc = v.xc or 0
     v.yc = v.yc or 0
+    v.x = v.x or 0
+    v.y = v.y or 0
     v.sprite = s
     if not s then
 	return v
@@ -396,7 +402,7 @@ function txt:make_page(v, nr)
 	    break
 	end
 	for _, w in ipairs(l) do
-	    if not w.spr then
+	    if not w.spr and w.w > 0 then
 		w.spr = fnt:text(font, size, w.txt,
 				 w.id and link_color or color, w.style)
 	    end
@@ -407,7 +413,9 @@ function txt:make_page(v, nr)
 	    else
 		w.link = nil
 	    end
-	    w.spr:copy(v.sprite, w.x, w.y - off)
+	    if w.spr then
+		    w.spr:copy(v.sprite, w.x, w.y - off)
+	    end
 	end
     end
     if v.typewriter then
@@ -541,9 +549,15 @@ function txt:new(v)
 		    if height > line.h then
 			line.h = height
 		    end
+
+		    if t == '[pause]' then
+			width = 0
+		    end
+
 		    local witem = { style = st,
 				    action = act, id = id, x = xx, y = y,
 				    w = width, h = height, txt = t }
+
 		    if id then
 			table.insert(link_list, witem)
 		    end
@@ -640,7 +654,7 @@ function txt:make_tw(v, step)
 	    if w.txt:len() + n <= step then
 		n = n + w.txt:len()
 		n = n + 1
-		if n >= step then
+		if n >= step and w.spr then
 		    w.spr:copy(spr, w.x, w.y - v.__offset)
 		end
 	    else
@@ -652,7 +666,12 @@ function txt:make_tw(v, step)
 		step = step + i - nm
 		local txt = w.txt:sub(1, i - 1)
 		local ww, hh = v.fnt:size(txt)
-		w.spr:copy(0, 0, ww, hh, spr, w.x, w.y - v.__offset)
+		if w.spr then
+			if type(decor.beep) == 'function' then
+			    decor.beep(v)
+			end
+			w.spr:copy(0, 0, ww, hh, spr, w.x, w.y - v.__offset)
+		end
 		n = step
 	    end
 	end
@@ -762,6 +781,18 @@ decor = obj {
 --[[
 decor:img{ 'hello', 'img' }
 ]]--
+
+function decor:zap()
+	local l = {}
+	for k, v in pairs(self.objects) do
+		table.insert(l, k)
+	end
+	for _, name in ipairs(l) do
+		local tt = self.objects[name].type
+		self[tt]:delete(self.objects[name])
+		self.objects[name] = nil
+	end
+end
 
 function decor:new(v)
     if type(v) == 'string' then
@@ -980,6 +1011,9 @@ end
 
 function D(n)
     decor.dirty = true
+    if n == nil then
+	return decor:zap()
+    end
     if type(n) == 'table' then
 	return decor:new(n)
     end
