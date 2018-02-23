@@ -156,7 +156,7 @@ std.mod_step(function(state)
 	if not state then
 		return
 	end
-	if player_moved() and std.cmd[1] ~= 'load' then
+	if (player_moved() or here().fading) and std.cmd[1] ~= 'load' and std.cmd[1] ~= '@fading' then
 		f.start()
 	end
 end)
