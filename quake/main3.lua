@@ -6,7 +6,7 @@ obj {
 	act = function(s)
 		p [[БАХ!!!]];
 		quake.start()
-		remove(s)
+--		remove(s)
 	end;
 }
 

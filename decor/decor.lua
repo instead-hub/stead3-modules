@@ -122,7 +122,7 @@ function img:render(v)
 	local delay = v.delay or 25
 	local w, h = v.sprite:size()
 	local width = math.floor(w / v.w)
-	local geight = math.floor(h / v.h)
+	local height = math.floor(h / v.h)
 	local frame = v.frame_nr or 0
 	local yy = math.floor(frame / width)
 	local xx = math.floor(frame % width)
