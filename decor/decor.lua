@@ -128,6 +128,7 @@ function img:render(v)
 	local xx = math.floor(frame % width)
 	v.fx = xx * v.w
 	v.fy = yy * v.h
+	decor.dirty = true
 	if instead.ticks() - (v.__delay or 0) >= delay then
 	    if frame < v.frames - 1 then
 		frame = frame + 1
@@ -839,8 +840,8 @@ function decor:process()
     local t = instead.ticks()
     for _, v in pairs(self.objects) do
 	if not v.hidden and type(v.process) == 'function' then
-	    decor.dirty = true
 	    if t - (v.__last_time or 0) > (v.speed or 25) then
+		    decor.dirty = true
 		    v:process()
 		    v.__last_time = t
 	    end
