@@ -50,9 +50,7 @@ local function proxy_wrap(nam, fwd)
 		if v then
 			r, v = std.call(std.game, 'after_'..act, o, std.unpack(par))
 			t = std.par(std.scene_delim, t or false, r)
-		end
-
-		if not t then -- game action
+		else -- game action
 			r, v = std.call(game, act, o, std.unpack(par))
 			t = std.par(std.scene_delim, t or false, r)
 		end
