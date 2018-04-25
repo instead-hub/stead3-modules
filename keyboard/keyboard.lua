@@ -70,7 +70,7 @@ local kbdru = {
 	[","] = "б",
 	["."] = "ю",
 	["`"] = "ё",
-
+	["/"] = ".",
 	shifted = {
 	["q"] = "Й",
 	["w"] = "Ц",
@@ -117,6 +117,7 @@ local kbdru = {
 	["0"] = ")",
 	["-"] = "_",
 	["="] = "+",
+	["/"] = ",",
 	}
 }
 local kbdlower = {
@@ -273,6 +274,7 @@ room {
 	nam = '@keyboard';
 	text = '';
 	alt = false;
+	numeric = false;
 	shift = false;
 	alt_xlat = false;
 	noinv = true;
@@ -334,6 +336,9 @@ room {
 			local kk, vv
 			local row = ''
 			for kk, vv in ipairs(v) do
+				if s.numeric and not std.tonum(vv) then
+					break
+				end
 				local a = kbdxlat(s, vv)
 				if vv == ',' then
 					vv = 'comma'
@@ -341,8 +346,15 @@ room {
 				row = row.."{@kbdinput \""..vv.."\"|"..input_esc(a).."}"..fmt.nb "  ";
 			end
 			pn(fmt.c(row))
+			if s.numeric then
+				break
+			end
 		end
-		pn (fmt.c[[{@kbdinput alt|«Alt»}    {@kbdinput shift|«Shift»}    {@kbdinput cancel|«Отмена»}    {@kbdinput backspace|«Забой»}    {@kbdinput return|«Ввод»}]]);
+		if s.numeric then
+			pn (fmt.c[[{@kbdinput cancel|«Отмена»}    {@kbdinput backspace|«Забой»}    {@kbdinput return|«Ввод»}]]);
+		else
+			pn (fmt.c[[{@kbdinput alt|«Alt»}    {@kbdinput shift|«Shift»}    {@kbdinput space|«Пробел»}    {@kbdinput cancel|«Отмена»}    {@kbdinput backspace|«Забой»}    {@kbdinput return|«Ввод»}]]);
+		end
 	end;
 }
 
@@ -354,7 +366,10 @@ std.mod_start(function(load)
 		hooked = true
 		orig_filter = std.rawget(keys, 'filter')
 		std.rawset(keys, 'filter', std.hook(keys.filter, function(f, s, press, key)
-			if std.here().keyboard_type then
+				if std.here().keyboard_type then
+					if _'@keyboard'.numeric and not std.tonum(key) and key ~= 'backspace' and key ~= 'return' then
+						return false
+					end
 				return hook_keys[key]
 			end
 			return f(s, press, key)
