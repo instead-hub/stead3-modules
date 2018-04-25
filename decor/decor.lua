@@ -128,7 +128,6 @@ function img:render(v)
 	local xx = math.floor(frame % width)
 	v.fx = xx * v.w
 	v.fy = yy * v.h
-	decor.dirty = true
 	if instead.ticks() - (v.__delay or 0) >= delay then
 	    if frame < v.frames - 1 then
 		frame = frame + 1
@@ -145,6 +144,10 @@ function img:render(v)
 	else
 	    v.sprite:copy(sprite.scr(), v.x - v.xc, v.y - v.yc)
 	end
+	return
+    end
+    if type(v.render) == 'function' then
+	v.render(v)
 	return
     end
     if v.fx and v.fy and v.w and v.h then
@@ -200,6 +203,28 @@ function img:new(v)
     end
     self.cache:put(fname)
     return self:new_spr(v, s)
+end
+
+local raw = {
+}
+
+function raw:delete(v)
+end
+function raw:clear()
+end
+function raw:render(v)
+	if type(v.render) ~= 'function' then
+		return
+	end
+	v.render(v)
+	return
+end
+function raw:new(v)
+	if type(v[3]) == 'function' then
+		v[3](v)
+		return v
+	end
+	return v
 end
 
 local fnt = {
@@ -389,11 +414,11 @@ function txt:make_page(v, nr)
     if v.w == 0 or v.h == 0 then
 	return
     end
-    if not v.spr_blank then
-	v.spr_blank = sprite.new(v.w, v.h)
+    if not v.__spr_blank then
+	v.__spr_blank = sprite.new(v.w, v.h)
     end
     local lnr = v.__pages[page]
-    v.spr_blank:copy(v.sprite)
+    v.__spr_blank:copy(v.sprite)
     if #lines == 0 then return end
     local off = lines[lnr].y
     v.__offset = off
@@ -421,13 +446,13 @@ function txt:make_page(v, nr)
     end
     if v.typewriter then
 	v.step = 0; -- typewriter effect
-	if not v.spr_blank then
-	    v.spr_blank = sprite.new(v.w, v.h)
+	if not v.__spr_blank then
+	    v.__spr_blank = sprite.new(v.w, v.h)
 	end
 	if not v.finished then
 		v.started = true
 		v.finished = false
-		v.spr_blank:copy(v.sprite)
+		v.__spr_blank:copy(v.sprite)
 	end
     end
 end
@@ -528,7 +553,6 @@ function txt:new(v)
 			t = ww
 			ww = false
 		    end
-
 		    while t:find("^%[[ibu]%]") do
 			table.insert(styles, t:sub(2, 2))
 			t = t:gsub("^%[[ibu]%]", "")
@@ -583,7 +607,14 @@ function txt:new(v)
 		    v.line = line
 		    table.insert(line, v)
 		end
-		x = x + spw
+		if #applist > 0 then
+			for i = #applist, 1, -1 do
+				if applist[i].w > 0 then
+					x = x + spw
+					break
+				end
+			end
+	        end
 		if x > W then
 		    W = x
 		end
@@ -773,6 +804,7 @@ decor = obj {
 	img = img;
 	fnt = fnt;
 	txt = txt;
+	raw = raw;
 	dirty = false;
 	objects = {
 	}
@@ -840,12 +872,13 @@ function decor:process()
     local t = instead.ticks()
     for _, v in pairs(self.objects) do
 	if not v.hidden and type(v.process) == 'function' then
+	    decor.dirty = true
 	    if t - (v.__last_time or 0) > (v.speed or 25) then
-		    decor.dirty = true
 		    v:process()
 		    v.__last_time = t
 	    end
 	end
+	if v.frames then decor.dirty = true end
     end
 end
 
