@@ -108,7 +108,7 @@ function f.start()
 	f.timer = timer:get()
 	f.effect.step = 0
 	f.started = true
-	timer:set(f.effect.delay or 20)
+	instead.timer(f.effect.delay or 20)
 end
 
 function f.change(ops)
@@ -158,7 +158,7 @@ std.mod_cmd(function(cmd)
 		if f.defeffect then
 			f.effect = std.clone(f.defeffect)
 		end
-		timer:set(f.timer)
+		instead.timer(f.timer)
 		sprite.direct(false)
 		return std.nop()
 	end
