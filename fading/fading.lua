@@ -51,7 +51,8 @@ end
 
 function f.effects.crossfade(s, src, dst)
 	local alpha = ((s.step - 1) / s.max) * 255;
-	src:draw(sprite.scr(), 0, 0, 255 - alpha);
+--	src:draw(sprite.scr(), 0, 0, 255 - alpha);
+	src:copy(sprite.scr());
 	dst:draw(sprite.scr(), 0, 0, alpha);
 end
 
@@ -165,7 +166,7 @@ std.mod_cmd(function(cmd)
 	return
 end)
 std.mod_init(function()
-	f.change { 'crossfade' };
+	f.change { 'crossfade', max = 8 };
 end)
 
 std.mod_start(function()
