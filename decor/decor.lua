@@ -460,6 +460,9 @@ end
 function txt:new(v)
     local text = v[3]
     if type(text) == 'function' then
+	if not std.functions[text] then
+	    std.err("Non declared function", 2)
+	end
 	text = text(v)
     end
     if type(text) ~= 'string' then
