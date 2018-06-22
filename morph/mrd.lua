@@ -854,6 +854,9 @@ end
 
 function mrd:create(fname, crc)
 	local dict = {}
+	if not std.readdir then
+		return
+	end
 	for f in std.readdir(instead.gamepath() .. '/'..(self.dir or '')) do
 		if f:find("%.lua$") or f:find("%.LUA$") then
 			mrd:file(f, dict)
