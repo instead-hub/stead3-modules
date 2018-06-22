@@ -1,3 +1,4 @@
+local type = type
 local kbdru = {
 	["q"] = "й",
 	["w"] = "ц",
