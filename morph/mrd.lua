@@ -629,7 +629,7 @@ function mrd:file(f, dict)
 				word = word:gsub("/[^/]*$", "")
 				for ww in word:gmatch(word_match) do
 					local t = self.lang.upper(self.lang.norm(ww))
-					if not dict[t] then
+					if not dict[t] and not t:find("%*$") then
 						dict[t] = true;
 						dprint("mrd: Added word: ", ww)
 					end
