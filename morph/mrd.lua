@@ -85,6 +85,23 @@ local function section(f, fn, ...)
 	return true
 end
 
+local gram_tt = {
+	["ИНФИНИТИВ"] = true;
+	["КР_ПРИЛ"] = true;
+	["КР_ПРИЧАСТИЕ"] = true;
+	["Г"] = true;
+}
+local function flex_filter(v)
+	local an = v.an
+	if an["им"] then
+		return true
+	end
+	if an["рд"] or an["дт"] or an["тв"] or an["пр"] or an["вн"] then
+		return false
+	end
+	return gram_tt[an.t]
+end
+
 local function flex_fn(l, flex, an)
 	l = l:gsub("//.*$", "")
 	local fl = {}
@@ -108,6 +125,9 @@ local function flex_fn(l, flex, an)
 			else
 				f.an_name = f.an
 				f.an = a
+				if flex_filter(f) then
+					f.filter = true
+				end
 				table.insert(fl, f)
 			end
 		end
@@ -141,19 +161,12 @@ local function gram_dump(v)
 	end
 end
 
-local function gram_filter(v)
-	if v.an["им"] then
-		return true
-	end
-	if v.an["рд"] or v.an["дт"] or v.an["тв"] or v.an["пр"] or v.an["вн"] then
-		return false
-	end
-	return v.an.t == 'ИНФИНИТИВ' or v.an.t == 'КР_ПРИЛ' or v.an.t == 'КР_ПРИЧАСТИЕ' or v.an.t == 'Г'
-end
 
 local busy_cnt = 0
 
+
 local function word_fn(l, self, dict)
+	local norm = mrd.lang.norm
 	local words = self.words
 	local words_list = self.words_list
 	local w = split(l)
@@ -194,37 +207,34 @@ local function word_fn(l, self, dict)
 	local num = 0
 	local used = false
 	for k, v in ipairs(nflex) do
-		if gram_filter(v) then
-			for _, pref in ipairs(npref or { '' }) do
-				local tt = v.pre .. t .. v.post
-				if self.lang.norm then
-					tt = self.lang.norm(tt)
+		if v.filter then
+		for _, pref in ipairs(npref or { '' }) do
+			local tt = norm(pref .. v.pre .. t .. v.post)
+--			if tt == 'ЗАКРЕПЛЕН' then
+--				gram_dump { t = t, pref = pref, flex = nflex, an = v.an }
+--			end
+			if not dict or dict[tt] then
+				local a = {}
+				for kk, vv in pairs(an or {}) do
+					a[kk] = an[kk]
 				end
---				if tt == 'ЗАКРЕПЛЕН' then
---					gram_dump { t = t, pref = pref, flex = nflex, an = v.an }
---				end
-				if not dict or dict[tt] then
-					local a = {}
-					for kk, vv in pairs(an or {}) do
-						a[kk] = an[kk]
-					end
-					for kk, vv in pairs(v.an) do
-						a[kk] = v.an[kk]
-					end
-					local w = { t = t, pref = pref, flex = nflex, an = a }
-					local wds = words[tt] or {}
-					table.insert(wds, w)
-					nflex.used = true
-					used = true
-					if npref then
-						npref.used = true
-					end
-					num = num + 1
-					if #wds == 1 then
-						words[tt] = wds
-					end
+				for kk, vv in pairs(v.an) do
+					a[kk] = v.an[kk]
+				end
+				local w = { t = t, pref = pref, flex = nflex, an = a }
+				local wds = words[tt] or {}
+				table.insert(wds, w)
+				nflex.used = true
+				used = true
+				if npref then
+					npref.used = true
+				end
+				num = num + 1
+				if #wds == 1 then
+					words[tt] = wds
 				end
 			end
+		end
 		end
 	end
 	if used then
