@@ -74,6 +74,7 @@ function game:ondecor(name, press, x, y, btn, act, where)
 act будет равен 'walk'
 where будет равно 'main'
 
+T('параметр темы', значение) -- смена параметров темы, которые попадут в save
 ]]--
 
 obj {
