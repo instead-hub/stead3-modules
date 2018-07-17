@@ -1014,6 +1014,7 @@ std.mod_start(
 		instead.wait_use(false)
 		instead.grab_events(true)
 		if load then
+			sprite.scr():fill(decor.bgcol)
 			decor:load()
 		end
 		decor:render()
