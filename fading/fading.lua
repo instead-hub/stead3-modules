@@ -147,9 +147,11 @@ end)
 
 std.mod_cmd(function(cmd)
 	if cmd[1] ~= '@fading' then
+		if f.started then
+			return true, false
+		end
 		return
 	end
-
 	f.effect.step = f.effect.step + 1
 
 	f.effects[f.effect[1]](f.effect, scr, scr2)
@@ -164,7 +166,7 @@ std.mod_cmd(function(cmd)
 		return std.nop()
 	end
 	return
-end)
+end, -1)
 std.mod_init(function()
 	f.change { 'crossfade', max = 8 };
 end)
