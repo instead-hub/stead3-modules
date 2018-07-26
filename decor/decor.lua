@@ -915,6 +915,7 @@ function decor:render()
 		self[v.type]:render(v)
 	end
 end
+std.mod_init(function(s)
 local oldrender = sprite.render_callback()
 sprite.render_callback(
 	function()
@@ -924,6 +925,7 @@ sprite.render_callback(
 		if oldrender then
 			oldrender()
 		end
+end)
 end)
 
 function decor:click_filter(press, x, y)

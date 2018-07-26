@@ -132,18 +132,6 @@ function f.set(ops)
 	end
 end
 
-local oldrender = sprite.render_callback()
-
-sprite.render_callback(function()
-	if f.started and not sprite.direct() then
-		sprite.direct(true)
-		sprite.scr():copy(scr2)
-		scr:copy(sprite.scr())
-	end
-	if not f.started and oldrender then
-		oldrender()
-	end
-end)
 
 std.mod_cmd(function(cmd)
 	if cmd[1] ~= '@fading' then
@@ -169,6 +157,17 @@ std.mod_cmd(function(cmd)
 end, -1)
 std.mod_init(function()
 	f.change { 'crossfade', max = 8 };
+	local oldrender = sprite.render_callback()
+	sprite.render_callback(function()
+		if f.started and not sprite.direct() then
+			sprite.direct(true)
+			sprite.scr():copy(scr2)
+			scr:copy(sprite.scr())
+		end
+		if not f.started and oldrender then
+			oldrender()
+		end
+	end)
 end)
 
 std.mod_start(function()
