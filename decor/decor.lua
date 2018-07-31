@@ -502,7 +502,13 @@ function txt:new(v)
 		if #line > 0 then
 			line.w = line[#line].x + line[#line].w
 		end
-		y = y + v.fnt:height() * intvl
+		local h = v.fnt:height()
+		for _, w in ipairs(line) do
+			if w.h > h then
+				h = w.h
+			end
+		end
+		y = y + h * intvl
 		if y > H then
 			H = y
 		end
@@ -585,7 +591,6 @@ function txt:new(v)
 					local witem = { style = st,
 							action = act, id = id, x = xx, y = y,
 							w = width, h = height, txt = t }
-
 					if id then
 						table.insert(link_list, witem)
 					end
