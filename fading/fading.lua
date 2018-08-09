@@ -135,7 +135,7 @@ end
 
 std.mod_cmd(function(cmd)
 	if cmd[1] ~= '@fading' then
-		if f.started then
+		if f.started and cmd[1] ~= 'save' then
 			return true, false
 		end
 		return
