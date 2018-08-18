@@ -62,7 +62,7 @@ local function autodetect_theme()
 			end
 		end
 	end
-	if not t then
+	if not t or t.nam == 'default' then
 		return
 	end
 	local f = io.open(instead.savepath().."/config.ini", "w")
