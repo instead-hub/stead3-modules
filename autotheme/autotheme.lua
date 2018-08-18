@@ -11,7 +11,7 @@ local function autodetect_theme()
 	f:close()
 
 	local themes = {}
-
+	local vertical = false
 	for d in std.readdir(instead.gamepath().."/themes") do
 		if d ~= '.' and d ~= '..' then
 			local p = instead.gamepath().."/themes/" .. d
@@ -32,6 +32,7 @@ local function autodetect_theme()
 					local r = w / h
 					if r < 1 then r = 1 / r end
 					table.insert(themes, { nam = d, w = w, h = h, mobile = w < h, ratio = r })
+					vertical = vertical or (w < h)
 				end
 				f:close()
 			end
@@ -41,20 +42,24 @@ local function autodetect_theme()
 	if #themes == 1 then
 		return
 	end
-
 	local w, h = instead.screen_size()
 	local r = w / h
 	local mobile = w < h or PLATFORM == "ANDROID" or PLATFORM == "IOS" or PLATFORM == "S60" or PLATFORM == "WINRT" or PLATFORM == "WINCE"
-	if mobile then
+	if w < h then
 		r = 1 / r
 	end
 	local d = 1000
 	local t = false
 	for _, v in ipairs(themes) do
 		local dd = math.abs(v.ratio - r)
-		if dd < d and (mobile or not v.mobile) then
-			d = dd
-			t = v
+		if dd < d then
+			if mobile and (not vertical or v.mobile) then
+				d = dd
+				t = v
+			elseif not mobile and not v.mobile then
+				d = dd
+				t = v
+			end
 		end
 	end
 	if not t then
