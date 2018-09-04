@@ -215,7 +215,7 @@ local hook_keys = {
 	['y'] = true, ['z'] = true, ['1'] = true, ['2'] = true, ['3'] = true, ['4'] = true,
 	['5'] = true, ['6'] = true, ['7'] = true, ['8'] = true, ['9'] = true, ['0'] = true,
 	["-"] = true, ["="] = true, ["["] = true, ["]"] = true, ["\\"] = true, [";"] = true,
-	["'"] = true, [","] = true, ["."] = true, ["/"] = true, ['space'] = true, ['backspace'] = true,
+	["'"] = true, [","] = true, ["."] = true, ["/"] = true, ['space'] = true, ['backspace'] = true, ['`'] = true,
 	['left alt'] = true, ['right alt'] = true, ['alt'] = true, ['left shift'] = true,
 	['right shift'] = true, ['shift'] = true, ['return'] = true,
 }
