@@ -787,7 +787,11 @@ function mrd:create(fname, crc)
 		return
 	end
 	for _, d in ipairs(self.dirs) do
-		for f in std.readdir(instead.gamepath() .. '/'..d) do
+    path = '.'
+    if instead.gamepath ~= nil then
+      path = instead.gamepath()
+    end
+		for f in std.readdir(path .. '/'..d) do
 			if f:find("%.lua$") or f:find("%.LUA$") then
 				local path = f
 				if d ~= '' then
