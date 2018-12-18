@@ -1303,11 +1303,11 @@ function mp:match(verb, w, compl)
 	-- initial state for a variable
 	-- we can calculate this outside of the loop
 	local a_state = {}
-  for k, v in ipairs(w) do
-    if k < verb.verb_nr or k >= verb.verb_nr + verb.verb_len then
-      table.insert(a_state, v)
-    end
-  end
+	for k, v in ipairs(w) do
+		if k < verb.verb_nr or k >= verb.verb_nr + verb.verb_len then
+			table.insert(a_state, v)
+		end
+	end
 	for _, d in ipairs(verb.dsc) do -- verb variants
 		local match = { args = {}, vargs = {}, ev = d.ev }
 		found = (#d.pat == 0)
