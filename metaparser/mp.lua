@@ -2317,7 +2317,7 @@ std.mod_start(function()
 	mp:compl_fill(mp:compl(""))
 end, 2)
 if instead.mouse_filter ~= nil then
-  instead.mouse_filter(0)
+	instead.mouse_filter(0)
 end
 
 function instead.fading()
