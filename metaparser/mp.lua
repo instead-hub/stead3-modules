@@ -1311,7 +1311,7 @@ function mp:match(verb, w, compl)
 	for _, d in ipairs(verb.dsc) do -- verb variants
 		local match = { args = {}, vargs = {}, ev = d.ev }
 		found = (#d.pat == 0)
-		local a = a_state
+		local a = a_state.clone()
 		local skip = {}
 		local all_optional = true
 		local rlev = 1
