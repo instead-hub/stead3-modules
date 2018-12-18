@@ -786,12 +786,16 @@ function mrd:create(fname, crc)
 	if not std.readdir then
 		return
 	end
+	-- if instead.gamepath exists, put it in dir variable;
+	-- if not, use current dir.
+	local dir = '.'
+	if instead.gamepath ~= nil then
+		dir = instead.gamepath()
+	end
 	for _, d in ipairs(self.dirs) do
-    path = '.'
-    if instead.gamepath ~= nil then
-      path = instead.gamepath()
-    end
-		for f in std.readdir(path .. '/'..d) do
+		-- calculate the path outside the loop
+		local dir_path = std.readdir(dir .. '/' .. d)
+		for f in dir_path do
 			if f:find("%.lua$") or f:find("%.LUA$") then
 				local path = f
 				if d ~= '' then
