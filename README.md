@@ -10,6 +10,10 @@ Select theme with best aspect ratio from themes/ while first start.
 
 Simple cutscene module.
 
+## emphasis
+
+This module lets you ditch txtb and txtem functions in the game main code. Compare: `pn "Hi"..txtem("Player")` and `pn "Hi *Player*"`.
+
 ## decor
 
 Graphical decorators above or bellow text layer.
@@ -42,6 +46,14 @@ ZX Adventure game like menu.
 
 On-screen quake effect.
 
+## rndstr
+
+A very short module that gives you a string randomization function.
+
 ## sfxr
 
 Software sound effects synthesis.
+
+## translate
+
+This module lets you use `gettext` to translate your works - unlike the copy-and-rewrite approach.
