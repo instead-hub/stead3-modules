@@ -1,9 +1,9 @@
-translate = {};
+global 'translate' ({})
 -- redefine to set source language
 translate.source = 'ru';
 
 -- Credit: http://lua-users.org/lists/lua-l/2010-04/msg00005.html
-function load_mo_file(mo_file)
+local function load_mo_file(mo_file)
   --------------------------------
   -- open file and read data
   --------------------------------
@@ -44,7 +44,7 @@ function load_mo_file(mo_file)
   --------------------------------
   local V=peek_long(4)
   if V~=0 then
-    return nul,"unsupported version"
+    return nil,"unsupported version"
   end
 
   ------------------------------
@@ -63,24 +63,27 @@ function load_mo_file(mo_file)
   return hash
 end
 
-
-if not LANG then
-  LANG = "en"
-end
-
-if LANG == translate.source then
-  _ = function(text)
-    return text;
-  end;
-else
-  translate.strings = load_mo_file('translations/' .. LANG .. '.mo');
-  if translate.strings == nil then
-    error("translation not found")
+translate.init = function()
+  if not LANG then
+    LANG = "en"
   end
-  _ = function(text)
-    if translate.strings[text] ~= nil then
-      return translate.strings[text];
+
+  if LANG == translate.source then
+    __ = function(text)
+      return text;
     end;
-    return text;
+  else
+    print(LANG);
+    print(translate.source);
+    translate.strings = load_mo_file('translations/' .. LANG .. '.mo');
+    if translate.strings == nil then
+      error("translation not found")
+    end
+    __ = function(text)
+      if translate.strings[text] ~= nil then
+        return translate.strings[text];
+      end;
+      return text;
+    end
   end
 end
