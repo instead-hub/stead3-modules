@@ -54,6 +54,11 @@ A very short module that gives you a string randomization function.
 
 Software sound effects synthesis.
 
+## transcript
+
+Make a game transcript in debug mode.
+Helps in proofreading and playtesting.
+
 ## translate
 
 This module lets you use `gettext` to translate your works - unlike the copy-and-rewrite approach.
