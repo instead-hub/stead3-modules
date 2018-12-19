@@ -1,8 +1,8 @@
 -- $Name: Translate test$
 -- instead_version "3.2.0"
 loadmod "translate";
-translate.source = 'en'; -- translate from English
-translate.init();
+translate:set_source('en'); -- translate from English
+translate:init();
 
 room {
   nam = 'main';

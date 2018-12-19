@@ -1,6 +1,13 @@
-global 'translate' ({})
--- redefine to set source language
-translate.source = 'ru';
+local module = obj {
+  nam = '@translate';
+  source = 'ru'; -- source language
+}
+
+--- Set the source language
+-- @param lang {string} language ISO string, like "en" or "ru"
+function module:set_source (lang)
+  self.source = lang;
+end
 
 -- Credit: http://lua-users.org/lists/lua-l/2010-04/msg00005.html
 local function load_mo_file(mo_file)
@@ -63,27 +70,27 @@ local function load_mo_file(mo_file)
   return hash
 end
 
-translate.init = function()
+function module:init()
   if not LANG then
     LANG = "en"
   end
 
-  if LANG == translate.source then
+  if LANG == self.source then
     __ = function(text)
       return text;
     end;
   else
-    print(LANG);
-    print(translate.source);
-    translate.strings = load_mo_file('translations/' .. LANG .. '.mo');
-    if translate.strings == nil then
+    self.strings = load_mo_file('translations/' .. LANG .. '.mo');
+    if self.strings == nil then
       error("translation not found")
     end
     __ = function(text)
-      if translate.strings[text] ~= nil then
-        return translate.strings[text];
+      if self.strings[text] ~= nil then
+        return self.strings[text];
       end;
       return text;
     end
   end
 end
+
+translate = module
