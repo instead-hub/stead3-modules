@@ -2,7 +2,7 @@
 -- instead_version "3.2.0"
 require "fmt"
 fmt.para = true
-require "emphasis"
+loadmod "emphasis"
 
 room {
   nam = 'main';
