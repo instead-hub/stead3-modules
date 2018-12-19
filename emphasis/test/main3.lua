@@ -4,6 +4,12 @@ require "fmt"
 fmt.para = true
 loadmod "emphasis"
 
+obj {
+  nam = 'this';
+  disp = '-this-';
+  inv = 'This -thing-';
+}
+take('this')
 room {
   nam = 'main';
   disp = 'Emphasis';

@@ -10,5 +10,3 @@ This module lets you ditch `txtb` and `txtem` functions in the game main code. C
      -strikeout-
 
 Just write `require "emphasis"` and use these shortcuts. Module requires `format` module automatically.
-
-WARNING: shortcuts don't work in inventory.
