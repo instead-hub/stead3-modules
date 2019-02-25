@@ -1,4 +1,3 @@
--- example module
 require "timer"
 
 std.cut_text = '>>>'
@@ -75,7 +74,9 @@ cutscene = function(v)
 			end
 			return
 		end
-		instead.fading_value = s.__fading
+		if s.__fading ~= nil then
+			instead.fading_value = s.__fading
+		end
 		s.__state = s.__state + 1
 		timer:stop()
 		s:step()
