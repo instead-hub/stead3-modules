@@ -1058,7 +1058,10 @@ function input:click(press, btn, x, y, px, py, ...)
 		end
 		return '@decor_click'.. (a or '')
 	end
-	return clickfn(input, press, btn, x, y, px, py, ...)
+	if clickfn then
+		return clickfn(input, press, btn, x, y, px, py, ...)
+	end
+	return false
 end
 
 function D(n)
