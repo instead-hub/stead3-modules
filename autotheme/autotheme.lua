@@ -65,11 +65,15 @@ local function autodetect_theme()
 	if not t or t.nam == 'default' then
 		return
 	end
-	local f = io.open(instead.savepath().."/config.ini", "w")
+	local name = instead.savepath().."/config.ini"
+	local name_tmp = name .. '.tmp'
+	local f = io.open(name_tmp, "w")
 	if f then
 		dprint("Autodetect theme: ", t.nam)
 		f:write("theme = "..t.nam.."\n")
 		f:close()
+		std.os.remove(name)
+		std.os.rename(name_tmp, name);
 		instead.restart()
 	end
 end
