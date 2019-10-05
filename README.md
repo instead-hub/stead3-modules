@@ -30,10 +30,6 @@ On-screen keyboard module.
 
 Link to web (copy to clipboard on click).
 
-## metaparser
-
-Module to create adventure games with text input (Inform6 like).
-
 ## proxymenu
 
 ZX Adventure game like menu.
