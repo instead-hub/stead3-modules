@@ -401,7 +401,7 @@ std.mod_start(function(load)
 		orig_text = std.rawget(input, 'text')
 		std.rawset(input, 'text', std.hook(input.text,
 		function(f, s, text, ...)
-				if std.here().keyboard_type and text ~= " " then
+				if std.here().keyboard_type and text ~= " " and  use_text_event() then
 					return '@kbdinput text '..string.format("%q", text)
 				end
 			return f(s, text, ...)
