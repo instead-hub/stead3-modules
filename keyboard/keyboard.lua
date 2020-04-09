@@ -1,8 +1,9 @@
 require "fmt"
 require "noinv"
 require "keys"
-
 local std = stead
+
+local input = std.ref '@input'
 
 local keyb = {
 	{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", },
@@ -156,6 +157,13 @@ local kbdlower = {
 	['Я'] = 'я',
 }
 
+local function use_text_event(key)
+	if key == "return" or key == "space" or key == "backspace" then
+		return false
+	end
+	return instead.text_input and instead.text_input()
+end
+
 local function tolow(s)
 	if not s then
 		return
@@ -176,7 +184,7 @@ local function input_esc(s)
 		return fmt.nb(s)
 	end
 	if not s then return end
-	local r = s:gsub("[^ ]+", rep):gsub("[ \t]", rep):gsub("{","\\{"):gsub("}","\\}");
+	local r = s:gsub("[^ ]+", rep):gsub("[ \t]", rep):gsub("{","\\{"):gsub("}","\\}"):gsub("|", "\\|");
 	return r
 end
 
@@ -231,9 +239,14 @@ end
 
 obj {
 	nam = '@kbdinput';
+	text = function(s, w)
+		std.here().text = std.here().text..w;
+	end;
 	act = function(s, w)
 		if w == 'comma' then
 			w = ','
+		elseif w == 'bsl' then
+			w = '\\'
 		end
 		if w:find("alt") then
 			std.here().alt_xlat = not std.here().alt_xlat
@@ -299,25 +312,30 @@ room {
 		s.alt = false
 		s.shift = false
 		s.__flt = instead.mouse_filter(0)
+		s.__oldquotes = fmt.quotes
+		fmt.quotes = false
 	end;
 	exit = function(s)
 		instead.mouse_filter(s.__flt)
+		fmt.quotes = s.__oldquotes
 	end;
 	onkey = function(s, press, key)
-		if key:find("alt") then
-			s.alt = press
-			if not press then
-				s.alt_xlat = not s.alt_xlat
+		if not use_text_event() then
+			if key:find("alt") then
+				s.alt = press
+				if not press then
+					s.alt_xlat = not s.alt_xlat
+				end
+				s:decor()
+				return false
 			end
-			s:decor()
-			return false
-		end
-		if s.alt then
-			return false
-		end
-		if key:find("shift") then
-			s.shift = press
-			return true
+			if s.alt then
+				return false
+			end
+			if key:find("shift") then
+				s.shift = press
+				return true
+			end
 		end
 		if not press then
 			return false
@@ -325,7 +343,10 @@ room {
 		if s.alt then
 			return false
 		end
-		return std.call(_'@kbdinput', 'act', key);
+		if not use_text_event(key) then
+			return std.call(_'@kbdinput', 'act', key);
+		end
+		return false
 	end;
 	decor = function(s)
 		p (s.msg)
@@ -342,6 +363,8 @@ room {
 				local a = kbdxlat(s, vv)
 				if vv == ',' then
 					vv = 'comma'
+				elseif vv == '\\' then
+					vv = 'bsl'
 				end
 				row = row.."{@kbdinput \""..vv.."\"|"..input_esc(a).."}"..fmt.nb "  ";
 			end
@@ -359,13 +382,14 @@ room {
 }
 
 local hooked
-local orig_filter
+local orig_filter, orig_text
 
 std.mod_start(function(load)
 	if not hooked then
 		hooked = true
 		orig_filter = std.rawget(keys, 'filter')
-		std.rawset(keys, 'filter', std.hook(keys.filter, function(f, s, press, key)
+		std.rawset(keys, 'filter', std.hook(keys.filter,
+		function(f, s, press, key)
 				if std.here().keyboard_type then
 					if _'@keyboard'.numeric and not std.tonum(key) and key ~= 'backspace' and key ~= 'return' then
 						return false
@@ -374,7 +398,22 @@ std.mod_start(function(load)
 			end
 			return f(s, press, key)
 		end))
+		orig_text = std.rawget(input, 'text')
+		std.rawset(input, 'text', std.hook(input.text,
+		function(f, s, text, ...)
+				if std.here().keyboard_type and text ~= " " then
+					return '@kbdinput text '..string.format("%q", text)
+				end
+			return f(s, text, ...)
+		end))
 	end
+end)
+
+std.mod_cmd(function(cmd)
+	if cmd[1] ~= '@kbdinput' or cmd[2] ~= 'text' then
+		return
+	end
+	return std.call(_'@kbdinput', 'text', cmd[3]);
 end)
 
 std.mod_done(function(load)
