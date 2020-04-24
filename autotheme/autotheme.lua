@@ -1,4 +1,7 @@
 local function autodetect_theme()
+	if not instead.screen_size then
+		return
+	end
 	local f = io.open(instead.savepath().."/config.ini", "r")
 	if f then
 		f:close()
