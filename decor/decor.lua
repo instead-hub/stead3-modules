@@ -650,6 +650,7 @@ function txt:new(v)
 		elseif (l.y + l.h - off > (maxh or H)) or brk then
 			off = l.y
 			table.insert(pages, _)
+			l.page = l.page + 1
 			brk = false
 		else
 			make_align(l, maxw or W, align)
