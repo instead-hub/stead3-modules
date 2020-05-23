@@ -792,6 +792,7 @@ function txt:render(v)
 					w.spr:copy(v.sprite, w.x, w.y - v.__offset)
 				end
 			end
+			decor.dirty = true
 		end
 	end
 	img:render(v)
