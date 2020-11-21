@@ -41,3 +41,7 @@ On-screen quake effect.
 ## sfxr
 
 Software sound effects synthesis.
+
+## xrefs
+
+Keyboard driven gameplay w/o visual hyperlinks.
