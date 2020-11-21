@@ -13,7 +13,7 @@ local xrt = {
 local xrs = {}
 local ixrs = {}
 local xrm = {}
-local style = 1 -- bold
+local style = 0 -- 1 -- bold
 local scale = 0.7
 local function load_fn()
 	local size = std.tonum(theme.get 'win.fnt.size')
