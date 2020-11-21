@@ -1,6 +1,8 @@
 if not instead.tiny then
-require 'theme'
+local std = stead
+local iface = std.ref '@iface'
 require 'sprite'
+local theme = std.ref '@theme'
 local xrt = {
 	'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -176,11 +178,6 @@ std.mod_start(function()
 
 	dict = {}
 	links = {}
-	local mp = std.ref '@metaparser'
-	if mp then
-		mp.winsize = 0
-		mp.prompt = false
-	end
 end)
 
 std.mod_step(function(state)
