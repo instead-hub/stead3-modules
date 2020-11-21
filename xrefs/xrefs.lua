@@ -1,6 +1,6 @@
+if not instead.tiny then
 require 'theme'
 require 'sprite'
-
 local xrt = {
 	'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
 	'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
@@ -193,3 +193,4 @@ std.mod_step(function(state)
 end)
 
 load_fn()
+end
