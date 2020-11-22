@@ -1,0 +1,1 @@
+error "Download https://github.com/instead-hub/metaparser/morph directory and put it into morph/"

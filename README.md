@@ -45,3 +45,7 @@ Software sound effects synthesis.
 ## xrefs
 
 Keyboard driven gameplay w/o visual hyperlinks.
+
+## extlib
+
+Extended library (metaparser elements).
