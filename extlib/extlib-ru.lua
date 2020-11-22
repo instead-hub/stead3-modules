@@ -1,4 +1,10 @@
+local lang = require "morph/lang-ru"
 local ex = require "extlib"
+
+std.mod_init(
+	function()
+	ex.mrd:init(lang)
+end)
 
 function ex.shortcut.vo(hint)
 	return "в ".. hint

@@ -1,8 +1,7 @@
 local mrd = require "morph/mrd"
-local lang = require "morph/lang-ru"
 local type = type
 
-local ex = { shortcut = {}, msg = {} }
+local ex = { shortcut = {}, msg = {}, mrd = mrd }
 local function pfmt(...)
 	p(std.exfmt(...))
 end
@@ -30,12 +29,8 @@ local function pnoun(noun, ...)
 	return r
 end
 
-std.mod_init(function()
-	mrd:init(lang)
-end)
-
 function std.obj:hint(hint)
-	return self:gram()[mrd.lang.gram_t[hint] or hint]
+	return self:gram()[ex.mrd.lang.gram_t[hint] or hint]
 end
 
 local function str_strip(str)
@@ -114,7 +109,7 @@ std.obj.display = function(s)
 		r = r .. std.scene_delim
 	end
 	if std.here() == s then
-		r = (r or '').. mrd.lang.cap(ex.msg.HERE) .. ' '
+		r = (r or '').. ex.mrd.lang.cap(ex.msg.HERE) .. ' '
 	else
 		if s:has 'supporter' then
 			r = (r or '').. pnoun(s, ex.msg.ON) .. ' '
@@ -377,12 +372,12 @@ function std.exfmt(...)
 				w = w:gsub("^{#", ""):gsub("}$", "")
 				local hint = w:gsub("^[^/]*/?", "")
 				w = w:gsub("/[^/]*$", "")
-				local cap = mrd.lang.is_cap(w)
+				local cap = ex.mrd.lang.is_cap(w)
 				w = w:lower()
 				if ex.shortcut[w] then
 					w = ex.shortcut[w](hint)
 					if cap then
-						w = mrd.lang.cap(w)
+						w = ex.mrd.lang.cap(w)
 					end
 				else
 					std.err("Wrong shortcut: ".. ww, 2)

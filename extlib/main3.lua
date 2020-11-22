@@ -1,12 +1,5 @@
 loadmod 'extlib-ru'
 
-local mrd = require "morph/mrd"
-local lang = require "morph/lang-ru"
-
-function init()
-	mrd:init(lang)
-end
-
 obj {
 	-"винтовка";
 	nam = "винтовка";
