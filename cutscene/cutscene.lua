@@ -72,7 +72,7 @@ cutscene = function(v)
 			if game.timer then
 				return game:timer()
 			end
-			return
+			return false
 		end
 		if s.__fading ~= nil then
 			instead.fading_value = s.__fading
