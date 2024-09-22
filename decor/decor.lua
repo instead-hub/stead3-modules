@@ -1025,6 +1025,7 @@ std.mod_start(
 		if load then
 			sprite.scr():fill(decor.bgcol)
 			decor:load()
+			decor.dirty = true
 		end
 --		decor:render()
 end)
