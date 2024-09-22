@@ -12,6 +12,7 @@ fading.change {'имя эффекта', параметры } -- задание �
 local effects = {
 	'crossfade',
 	'fadeblack',
+	'fadewhite',
 	'move_left',
 	'move_right',
 	'move_up',

@@ -184,7 +184,8 @@ std.mod_step(function(state)
 	if not state then
 		return
 	end
-	if (player_moved() or f.effect.now) and std.cmd[1] ~= 'load' and std.cmd[1] ~= '@fading' then
+	if (player_moved() or f.effect.now) and std.cmd[1] ~= 'load' and std.cmd[1] ~= '@fading'
+		and std.cmd[1] ~= 'look' then
 		f.start()
 	end
 end)

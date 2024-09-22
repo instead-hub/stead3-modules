@@ -1026,7 +1026,7 @@ std.mod_start(
 			sprite.scr():fill(decor.bgcol)
 			decor:load()
 		end
-		decor:render()
+--		decor:render()
 end)
 
 std.mod_step(
@@ -1036,10 +1036,20 @@ std.mod_step(
 				decor:cache_clear()
 				decor:process()
 				decor:render()
+				if timer:get() == 0 then
+					instead.timer(0)
+				end
 			end
 			return
 		end
-		if not iface:raw_mode() then -- debugger?
+		if iface:raw_mode() then -- debugger?
+			return
+		end
+		if std.cmd[1] == 'load' or std.cmd[1] == 'look' then
+			if timer:get() == 0 then
+				instead.timer(1)
+			end
+		else
 			decor:cache_clear()
 			decor:process()
 			decor:render()
